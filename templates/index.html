@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MAKAUT Marks Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        form { display: inline-block; text-align: left; margin-top: 20px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; }
+        .form-section { display: none; }
+    </style>
+</head>
+<body>
+    <h1>MAKAUT Marks Calculator</h1>
+    <form method="post" action="/calculate">
+        <label for="option">Select an option:</label>
+        <select name="option" id="option" onchange="showFields()">
+            <option value="">-- Select --</option>
+            <option value="sgpa_per">SGPA to Percentage</option>
+            <option value="sgpa_back">SGPA with Backlogs</option>
+            <option value="ygpa">YGPA</option>
+            <option value="dgpa">DGPA</option>
+            <option value="cgpa">CGPA</option>
+        </select>
+
+        <div id="sgpa_per" class="form-section">
+            <label>SGPA:</label>
+            <input type="number" name="sgpa" step="0.01">
+        </div>
+
+        <div id="sgpa_back" class="form-section">
+            <label>Obtained Credits:</label>
+            <input type="number" name="obtained_credits" step="0.01">
+            <label>Total Credits:</label>
+            <input type="number" name="total_credits" step="0.01">
+        </div>
+
+        <div id="ygpa" class="form-section">
+            <label>Semester 1 SGPA:</label>
+            <input type="number" name="sem1" step="0.01">
+            <label>Semester 2 SGPA:</label>
+            <input type="number" name="sem2" step="0.01">
+        </div>
+
+        <div id="dgpa" class="form-section">
+            <label>Number of Years:</label>
+            <input type="number" id="year" name="year" min="1" max="4" onchange="generateYGPAInputs()">
+            <div id="ygpaInputs"></div>
+        </div>
+
+        <div id="cgpa" class="form-section">
+            <label>Obtained Credits:</label>
+            <input type="number" name="obtained_credits" step="0.01">
+            <label>Total Credits:</label>
+            <input type="number" name="total_credits" step="0.01">
+        </div>
+
+        <br>
+        <input type="submit" value="Calculate">
+    </form>
+
+    <script>
+        function showFields() {
+            const sections = document.querySelectorAll('.form-section');
+            sections.forEach(s => s.style.display = 'none');
+
+            const selected = document.getElementById('option').value;
+            const visibleSection = document.getElementById(selected);
+            if (visibleSection) visibleSection.style.display = 'block';
+        }
+
+        function generateYGPAInputs() {
+            const container = document.getElementById('ygpaInputs');
+            container.innerHTML = '';
+            const yearCount = parseInt(document.getElementById('year').value);
+            for (let i = 1; i <= yearCount; i++) {
+                const label = document.createElement('label');
+                label.textContent = `YGPA ${i}:`;
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.name = `ygpa${i}`;
+                input.step = '0.01';
+                container.appendChild(label);
+                container.appendChild(input);
+            }
+        }
+    </script>
+</body>
+</html>

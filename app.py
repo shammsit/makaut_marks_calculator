@@ -31,59 +31,56 @@ def calculate():
         return render_template('result.html', result=f"Your YGPA is: {round(ygpa, 2)} | Percentage: {round(percentage, 2)}%")
 
     elif option == 'dgpa':
-    year = int(request.form['year'])
+        year = int(request.form['year'])
 
-    # For 4-year course
-    if year == 4:
-        lateral = request.form.get('lateral')  # 'Y' or 'N'
-
-        if lateral in ['Y', 'y']:
-            ygpa2 = float(request.form['ygpa2'])
-            ygpa3 = float(request.form['ygpa3'])
-            ygpa4 = float(request.form['ygpa4'])
-            dgpa = (ygpa2 + (1.5 * ygpa3) + (1.5 * ygpa4)) / 4
-        elif lateral in ['N', 'n']:
+        if year == 4:
+            lateral = request.form.get('lateral')
+            if lateral in ['Y', 'y']:
+                ygpa2 = float(request.form['ygpa2'])
+                ygpa3 = float(request.form['ygpa3'])
+                ygpa4 = float(request.form['ygpa4'])
+                dgpa = (ygpa2 + (1.5 * ygpa3) + (1.5 * ygpa4)) / 4
+            elif lateral in ['N', 'n']:
+                ygpa1 = float(request.form['ygpa1'])
+                ygpa2 = float(request.form['ygpa2'])
+                ygpa3 = float(request.form['ygpa3'])
+                ygpa4 = float(request.form['ygpa4'])
+                dgpa = (ygpa1 + ygpa2 + (1.5 * ygpa3) + (1.5 * ygpa4)) / 5
+            else:
+                return render_template('result.html', result="Invalid input for lateral entry.")
+        
+        elif year == 3:
             ygpa1 = float(request.form['ygpa1'])
             ygpa2 = float(request.form['ygpa2'])
             ygpa3 = float(request.form['ygpa3'])
-            ygpa4 = float(request.form['ygpa4'])
-            dgpa = (ygpa1 + ygpa2 + (1.5 * ygpa3) + (1.5 * ygpa4)) / 5
+            dgpa = (ygpa1 + ygpa2 + ygpa3) / 3
+
+        elif year == 2:
+            ygpa1 = float(request.form['ygpa1'])
+            ygpa2 = float(request.form['ygpa2'])
+            dgpa = (ygpa1 + ygpa2) / 2
+
+        elif year == 1:
+            ygpa1 = float(request.form['ygpa1'])
+            dgpa = ygpa1
+            percentage = (dgpa - 0.75) * 10
+            return render_template('result.html',
+                result=f"Your DGPA is your YGPA itself: {round(dgpa, 2)} | Percentage: {round(percentage, 2)}%"
+            )
+
         else:
-            return render_template('result.html', result="Invalid input for lateral entry.")
+            return render_template('result.html', result="Invalid course duration.")
 
-    elif year == 3:
-        ygpa1 = float(request.form['ygpa1'])
-        ygpa2 = float(request.form['ygpa2'])
-        ygpa3 = float(request.form['ygpa3'])
-        dgpa = (ygpa1 + ygpa2 + ygpa3) / 3
-
-    elif year == 2:
-        ygpa1 = float(request.form['ygpa1'])
-        ygpa2 = float(request.form['ygpa2'])
-        dgpa = (ygpa1 + ygpa2) / 2
-
-    elif year == 1:
-        ygpa1 = float(request.form['ygpa1'])
-        dgpa = ygpa1
-        percentage = (dgpa - 0.75) * 10
-        return render_template('result.html',
-            result=f"Your DGPA is your YGPA itself: {round(dgpa, 2)} | Percentage: {round(percentage, 2)}%"
-        )
-
-    else:
-        return render_template('result.html', result="Invalid course duration.")
-
-    # Ask if user wants percentage
-    convert = request.form.get('convert')  # 'Y' or 'N'
-    if convert in ['Y', 'y']:
-        percentage = (dgpa - 0.75) * 10
-        return render_template('result.html',
-            result=f"Your DGPA is: {round(dgpa, 2)} | Percentage: {round(percentage, 2)}%"
-        )
-    else:
-        return render_template('result.html',
-            result=f"Your DGPA is: {round(dgpa, 2)}"
-        )
+        convert = request.form.get('convert')
+        if convert in ['Y', 'y']:
+            percentage = (dgpa - 0.75) * 10
+            return render_template('result.html',
+                result=f"Your DGPA is: {round(dgpa, 2)} | Percentage: {round(percentage, 2)}%"
+            )
+        else:
+            return render_template('result.html',
+                result=f"Your DGPA is: {round(dgpa, 2)}"
+            )
 
     elif option == 'cgpa':
         obtained_credits = float(request.form['obtained_credits'])

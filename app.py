@@ -48,7 +48,7 @@ def calculate():
                 dgpa = (ygpa1 + ygpa2 + (1.5 * ygpa3) + (1.5 * ygpa4)) / 5
             else:
                 return render_template('result.html', result="Invalid input for lateral entry.")
-        
+
         elif year == 3:
             ygpa1 = float(request.form['ygpa1'])
             ygpa2 = float(request.form['ygpa2'])
@@ -83,11 +83,31 @@ def calculate():
             )
 
     elif option == 'cgpa':
-        obtained_credits = float(request.form['obtained_credits'])
-        total_credits = float(request.form['total_credits'])
+        try:
+            sem_count = int(request.form['sem_count'])
+        except (ValueError, KeyError):
+            return render_template('result.html', result="Semester count missing or invalid.")
+
+        total_credits = 0.0
+        obtained_credits = 0.0
+
+        for i in range(1, sem_count + 1):
+            try:
+                credit = float(request.form.get(f'credit_{i}', 0))
+                credit_obt = float(request.form.get(f'credit_obt_{i}', 0))
+                total_credits += credit
+                obtained_credits += credit_obt
+            except ValueError:
+                return render_template('result.html', result=f"Invalid input for semester {i}.")
+
+        if total_credits == 0:
+            return render_template('result.html', result="Total credits cannot be zero.")
+
         cgpa = obtained_credits / total_credits
         percentage = (cgpa - 0.75) * 10
-        return render_template('result.html', result=f"Your CGPA is: {round(cgpa, 2)} | Percentage: {round(percentage, 2)}%")
+        return render_template('result.html',
+            result=f"Your CGPA is: {round(cgpa, 2)} | Percentage: {round(percentage, 2)}%"
+        )
 
     else:
         return render_template('result.html', result="Invalid selection.")

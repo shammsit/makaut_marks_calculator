@@ -43,8 +43,24 @@
 
         <div id="dgpa" class="form-section">
             <label>Number of Years:</label>
-            <input type="number" id="year" name="year" min="1" max="4" onchange="generateYGPAInputs()">
+            <input type="number" id="year" name="year" min="1" max="4" onchange="handleDGPAChange()">
+
+            <div id="lateralEntrySection" style="display: none;">
+                <label>Lateral Entry Student?</label>
+                <select name="lateral" id="lateral">
+                    <option value="">-- Select --</option>
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                </select>
+            </div>
+
             <div id="ygpaInputs"></div>
+
+            <label>Convert to Percentage?</label>
+            <select name="convert">
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+            </select>
         </div>
 
         <div id="cgpa" class="form-section">
@@ -68,20 +84,35 @@
             if (visibleSection) visibleSection.style.display = 'block';
         }
 
-        function generateYGPAInputs() {
-            const container = document.getElementById('ygpaInputs');
-            container.innerHTML = '';
-            const yearCount = parseInt(document.getElementById('year').value);
-            for (let i = 1; i <= yearCount; i++) {
-                const label = document.createElement('label');
-                label.textContent = `YGPA ${i}:`;
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.name = `ygpa${i}`;
-                input.step = '0.01';
-                container.appendChild(label);
-                container.appendChild(input);
+        function handleDGPAChange() {
+            const year = parseInt(document.getElementById('year').value);
+            const lateralSection = document.getElementById('lateralEntrySection');
+            const ygpaContainer = document.getElementById('ygpaInputs');
+            ygpaContainer.innerHTML = '';
+
+            if (year === 4) {
+                lateralSection.style.display = 'block';
+            } else {
+                lateralSection.style.display = 'none';
+                for (let i = 1; i <= year; i++) {
+                    ygpaContainer.innerHTML += `<label>YGPA ${i} Year:</label><input type="number" name="ygpa${i}" step="0.01">`;
+                }
             }
+
+            document.getElementById('lateral').onchange = function () {
+                const lateral = this.value;
+                ygpaContainer.innerHTML = '';
+
+                if (lateral === 'Y') {
+                    ['2nd', '3rd', '4th'].forEach((yr, idx) => {
+                        ygpaContainer.innerHTML += `<label>YGPA ${yr} Year:</label><input type="number" name="ygpa${idx + 2}" step="0.01">`;
+                    });
+                } else if (lateral === 'N') {
+                    ['1st', '2nd', '3rd', '4th'].forEach((yr, idx) => {
+                        ygpaContainer.innerHTML += `<label>YGPA ${yr} Year:</label><input type="number" name="ygpa${idx + 1}" step="0.01">`;
+                    });
+                }
+            };
         }
     </script>
 </body>
